@@ -1,0 +1,5148 @@
+
+openapi: 3.0.2
+
+info:
+
+  title: Qredo Partner & Core Client API
+
+  description: >
+    The Qredo Partner API provisions and manages Qredo services. It can be used by Partners to setup and manage client accounts. The Core Client API enables transactions to be initiated and signed.
+    <br>
+      Note, two servers are provided:
+      - API Server base path https://api.qredo.network/api/v1/p
+      - Sandbox server base path https://sandbox-api.qredo.network/api/v1/p
+
+
+  version: 1.1.2
+
+servers:
+
+  - url: 'https://api.qredo.network/api/v1/p'
+    description: API server
+
+  - url: 'https://sandbox-api.qredo.network/api/v1/p'
+    description: Sandbox server
+
+
+security:
+
+  - ApiKeyAuth: []
+
+
+paths:
+
+  /assets:
+
+    get:
+
+      tags:
+
+        - Common
+
+      summary: Supported assets
+
+      description: returns a list of supported assets and their codes
+
+      parameters:
+
+        - required: false
+
+          schema:
+
+            title: x-nonce
+
+            type: string
+
+          name: x-nonce
+
+          in: header
+
+        - required: false
+
+          schema:
+
+            title: x-timestamp
+
+            type: string
+
+          name: x-timestamp
+
+          in: header
+
+        - required: false
+
+          schema:
+
+            title: x-sign
+
+            type: string
+
+          name: x-sign
+
+          in: header
+
+      responses:
+
+        '200':
+
+          description: Successful Response
+
+          content:
+
+            application/json:
+
+              schema:
+
+                $ref: '#/components/schemas/Assets'
+
+        '401':
+
+          $ref: '#/components/responses/Unauthorized'
+
+  /fees:
+
+    post:
+
+      tags:
+
+        - Common
+
+      summary: Calculate fees
+
+      description: Calculate fees for specific assets and transaction types for any company on the network.
+
+      parameters:
+
+        - required: false
+
+          schema:
+
+            title: x-nonce
+
+            type: string
+
+          name: x-nonce
+
+          in: header
+
+        - required: false
+
+          schema:
+
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeesRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeesResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /company:
+    post:
+      tags:
+        - Company
+      summary: Create Company
+      description: |-
+        Create a Company on behalf of a customer account to include all managed network entities
+         i.e. Trusted Parties, Holdings, Funds, Custody Policies and those for the movement of assets (deposits, transfers, and withdrawals).
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Company'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCompanyResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+
+          $ref: '#/components/responses/Conflict'
+  '/company/{company_id}':
+    get:
+      tags:
+        - Company
+      summary: Get Company
+      description: returns details of a Company from the Company ID.
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Company Id
+            type: string
+          name: company_id
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Company'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - Company
+      summary: Update Company
+      description: Change details of a Company
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Company Id
+            type: string
+          name: company_id
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Company'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCompanyResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /company/search:
+    get:
+      tags:
+        - Company
+      summary: Search Company
+      description: 'Search for a Company in the database using the string entered in the query parameter for matching. For example, entering 3 letters returns all companies where those letters exist.'
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: false
+          schema:
+            title: Query
+            type: string
+          name: query
+          in: query
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanySearchResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  '/company/{company_id}/trustedparty':
+    get:
+      tags:
+        - TrustedNetwork
+      summary: returns all Trusted Parties for a Company
+      description: Returns all Trusted Parties for a Company. A Trusted Party is a user that can be added as a custodian of a wallet or member of a fund.
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Company Id
+            type: string
+          name: company_id
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrustedPartyList'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags:
+        - TrustedNetwork
+      summary: Add Trusted Party
+      description: |-
+        Add a Trusted Party for the Company. A Trusted Party is a user that can be added as a custodian of a wallet or member of a fund. Qredo network as a Company or User.
+          When adding a user, they must approve this via their Qredo Signing App.
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Company Id
+            type: string
+          name: company_id
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrustedPartyNew'
+        required: true
+      responses:
+        '200':
+          description: 'HTTP 200 OK message indicating that the request for adding a Trusted Party was successful. Note that when you add a Trusted Party as a user, they need to approve this using their Qredo Signing App.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/company/{company_id}/trustedparty/{trustedparty_id}':
+    delete:
+      tags:
+        - TrustedNetwork
+      summary: Del Trusted party
+      description: Delete a Trusted Party from the trusted network.
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Company Id
+            type: string
+          name: company_id
+          in: path
+        - required: true
+          schema:
+            title: Trusted party id
+            description: The ID of the trusted party.
+            type: string
+          name: trustedparty_id
+          in: path
+      responses:
+        '202':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/company/{company_id}/holding':
+    get:
+      tags:
+        - Holding
+      summary: Get Holdings
+      description: 'returns information on all the assets for a company on the Qredo network. Each Holding is divided according to the asset type. Each Holding entry also includes the balance for that asset, allowing you to track funds coming in and out.'
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Company Id
+            type: string
+          name: company_id
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Holdings'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/company/{company_id}/fund':
+    post:
+      tags:
+        - Fund
+      summary: Add Fund
+      description: 'Create a Fund that serves as a wallet containing assets, addresses, and custody policies. Custody policies for both deposits and withdrawals must exist for a fund. Policies can include multiple custodians, or a single user that self-manages custody. For an individual fund, you can also add whitelisted withdrawal addresses.'
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Company Id
+            type: string
+          name: company_id
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Fund'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateFundResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/company/{company_id}/fund/{fund_id}':
+    get:
+      tags:
+        - Fund
+      summary: Get Fund
+      description: returns basic information on the Fund including the custody groups for withdrawal and transfers. There are also details on fund members who are part of each custody group.
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Company Id
+            type: string
+          name: company_id
+          in: path
+        - required: true
+          schema:
+            title: Fund Id
+            type: string
+          name: fund_id
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FundDetail'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/company/{company_id}/fund/{fund_id}/deposit':
+    get:
+      tags:
+        - Fund
+      summary: Get Fund Deposit Address
+      description: returns a list of fund assets with their Deposit Addresses and current balances. Each fund contains one or more deposit addresses for the different types of assets.
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Company Id
+            type: string
+          name: company_id
+          in: path
+        - required: true
+          schema:
+            title: Fund Id
+            type: string
+          name: fund_id
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FundDepositResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/company/{company_id}/fund/{fund_id}/whitelist':
+    get:
+      tags:
+        - Fund
+      summary: Get Fund Whitelist
+      description: Get Whitelisted addresses for fund transactions.
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Company Id
+            type: string
+          name: company_id
+          in: path
+        - required: true
+          schema:
+            title: FundID
+            type: string
+          name: fund_id
+          in: path
+        - required: false
+          schema:
+            title: Address
+            description: Filter by specific address
+            type: string
+          name: address
+          in: query
+        - required: false
+          schema:
+            title: Asset
+            description: 'Filter by specific asset code, use in combination with address'
+            type: string
+          name: asset
+          in: query
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FundWhitelist'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags:
+        - Fund
+      summary: Add Whitelist address
+      description: An address needs to be Whitelisted to ensure it is approved for a withdrawal transaction.
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Company Id
+            type: string
+          name: company_id
+          in: path
+        - required: true
+          schema:
+            title: Fund Id
+            type: string
+          name: fund_id
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddFundWhitelist'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/company/{company_id}/fund/{fund_id}/asset':
+    post:
+      tags:
+        - Fund
+      summary: Add Asset to a fund
+      description: Add an Asset to an existing fund
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Company Id
+            type: string
+          name: company_id
+          in: path
+        - required: true
+          schema:
+            title: Fund Id
+            type: string
+          name: fund_id
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FundAsset'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletIDList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  '/company/{company_id}/fund/{fund_id}/wallet':
+    post:
+      tags:
+        - Fund
+        - Wallet
+      summary: Add Wallet to a fund
+      description: Add a new Wallet to an existing fund. If Custody groups are blank the default fund cutosdy policy will be used
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Company Id
+            type: string
+          name: company_id
+          in: path
+        - required: true
+          schema:
+            title: Fund Id
+            type: string
+          name: fund_id
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FundWallet'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletIDList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  '/company/{company_id}/fund/{fund_id}/ledger':
+    get:
+      tags:
+        - Fund
+      summary: Transaction ledger
+      description: Get transaction ledger for a fund
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Company Id
+            type: string
+          name: company_id
+          in: path
+        - required: true
+          schema:
+            title: Fund Id
+            type: string
+          name: fund_id
+          in: path
+        - required: false
+          schema:
+            title: Asset
+            type: string
+          name: asset
+          in: query
+        - required: false
+          schema:
+            title: Wallet Id
+            type: string
+          name: wallet_id
+          in: query
+        - required: false
+          schema:
+            title: Direction
+            type: string
+            enum:
+              - all
+              - in
+              - out
+          name: direction
+          in: query
+        - required: false
+          schema:
+            title: Offset
+            type: integer
+          name: offset
+          in: query
+        - required: false
+          schema:
+            title: Limit
+            type: integer
+          name: limit
+          in: query
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TxLedger'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/company/{company_id}/fund/search':
+    get:
+      tags:
+        - Fund
+      summary: Search Fund
+      description: 'Search funds in the database using the string entered in the query parameter for matching. For example, entering 3 letters returns all funds where those letters exist.'
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Company Id
+            type: string
+          name: company_id
+          in: path
+        - required: false
+          schema:
+            title: Query
+            type: string
+          name: query
+          in: query
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FundSearchResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/wallet/{wallet_id}':
+    get:
+      tags:
+        - Wallet
+      summary: Get wallet info
+      description: 'Get wallet info, addresses and balance.'
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Wallet Id
+            type: string
+          name: wallet_id
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FundWalletInfo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/wallet/{wallet_id}/history':
+    get:
+      tags:
+        - Wallet
+      summary: Get wallet history
+      description: Get wallet history
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Wallet Id
+            type: string
+          name: wallet_id
+          in: path
+        - required: false
+          schema:
+            title: Since timestamp
+            description: Include only the history after that epoch timestamp
+            type: number
+          name: since
+          in: query
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FundWalletHistory'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/wallet/{wallet_id}/max':
+    get:
+      tags:
+        - Wallet
+      summary: Get wallet max amount with fees
+      description: Returns the max amount that can be moved out of the wallet. Set pending="1" to include unauthorized transactions when calculating the available balance
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Wallet Id
+            type: string
+          name: wallet_id
+          in: path
+        - required: false
+          schema:
+            title: Include unconfirmed transactions
+            description: Set "1" to include pending transaction when calculating the available balance
+            type: number
+            default: 0
+          name: pending
+          in: query
+        - required: false
+          schema:
+            title: Transaction type
+            type: string
+            enum:
+              - transfer
+              - withdraw
+              - swap
+            default: transfer
+          name: tx_type
+          in: query
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeesResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /exchanges:
+    get:
+      tags:
+        - Wallet
+      summary: Get list of all available exchanges
+      description: Get list of all identities that can be added as Connected accounts to a wallet.
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExchangesList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/company/{company_id}/transfer':
+    post:
+      tags:
+        - Transfer
+      summary: New Transfer
+      description: 'Initiate a new Transfer on a fund that includes various settings for the transaction. When a transfer transaction is created, custodian(s) need to approve it via their Qredo Signing app. The number of custodian approvals depends on the Transfer Policy settings for the fund.'
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Company Id
+            type: string
+          name: company_id
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transfer'
+        required: true
+      responses:
+        '200':
+          description: Response is Transaction ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TxId'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/company/{company_id}/transfer/{tx_id}':
+    get:
+      tags:
+        - Transfer
+      summary: Get Transfer Status
+      description: returns the Transfer Status for a specific transaction at that point in time.
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Company Id
+            type: string
+          name: company_id
+          in: path
+        - required: true
+          schema:
+            title: TxId
+            type: string
+          name: tx_id
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TxInfo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/company/{company_id}/withdraw':
+    post:
+      tags:
+        - Withdrawal
+      summary: New withdrawal
+      description: 'Initiate a withdrawal and set parameters for the transaction. When a withdrawal transaction is created, custodian(s) need to approve it through their Qredo Signing app. (The number of custodian approvals depends on your Transfer Policy settings.)'
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Company Id
+            type: string
+          name: company_id
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Withdrawal'
+        required: true
+      responses:
+        '200':
+          description: Response is Transaction ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TxId'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/company/{company_id}/withdraw/{tx_id}':
+    get:
+      tags:
+        - Withdrawal
+      summary: Get withdrawal status
+      description: Obtain details on a withdrawal status
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Company Id
+            type: string
+          name: company_id
+          in: path
+        - required: true
+          schema:
+            title: TxId
+            type: string
+          name: tx_id
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WithdrawalInfo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/company/{company_id}/atomicswap/make':
+    post:
+      tags:
+        - Atomic Swap
+      summary: Create Atomic Swap Quote
+      description: Initiate an Atomic Swap Quote and set parameters for the transaction.
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Company Id
+            type: string
+          name: company_id
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AtomicSwapMake'
+        required: true
+      responses:
+        '200':
+          description: Response is Atomic Swap ID and Swap URL.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SwapTxId'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/company/{company_id}/atomicswap/make/{tx_id}':
+    get:
+      tags:
+        - Atomic Swap
+      summary: Get Atomic Swaps Quote details
+      description: Obtain details on an atomic swap
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Company Id
+            type: string
+          name: company_id
+          in: path
+        - required: true
+          schema:
+            title: TxId
+            type: string
+          name: tx_id
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Atomic Swap
+      summary: Cancel Atomic Swap
+      description: Cancel atomic swap
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Company Id
+            type: string
+          name: company_id
+          in: path
+        - required: true
+          schema:
+            title: TxId
+            type: string
+          name: tx_id
+          in: path
+      responses:
+        '202':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/company/{company_id}/atomicswap/take':
+    post:
+      tags:
+        - Atomic Swap
+      summary: Initiate Atomic swap taker transaction
+      description: Initiate an atomic swap take transaction.
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Company Id
+            type: string
+          name: company_id
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AtomicSwapTake'
+        required: true
+      responses:
+        '200':
+          description: Response is txID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TxId'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/company/{company_id}/atomicswap/take/{tx_id}':
+    get:
+      tags:
+        - Atomic Swap
+      summary: Get atomic swap taker status
+      description: Obtain details on an atomic swap
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Company Id
+            type: string
+          name: company_id
+          in: path
+        - required: true
+          schema:
+            title: TxId
+            type: string
+          name: tx_id
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/company/{company_id}/liquidityhub':
+    get:
+      tags:
+        - Liquidity Hub
+      summary: Get Liquidity Hub
+      description: 'Get all the active swaps in the liquidity hub. You can use websocket connection to get live notifications when a new swap is added to the liquidity hub using this endpoint: wss://api.qredo.network/api/v1/p/liquidityhub/feed'
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Company Id
+            type: string
+          name: company_id
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LiquidityHub'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags:
+        - Liquidity Hub
+      summary: Add to liquidity hub
+      description: Add an existing swap to the liquidity hub.
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Company Id
+            type: string
+          name: company_id
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddToLiquidityHub'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /liquidityhub:
+    get:
+      tags:
+        - Liquidity Hub
+      summary: Get Liquidity Hub
+      description: 'Get all the active swaps in the liquidity hub. You can use websocket connection to get live notifications when a new swap is added to the liquidity hub using this endpoint: wss://api.qredo.network/api/v1/p/liquidityhub/feed'
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LiquidityHub'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /coreclient:
+    post:
+      tags:
+        - Core Client
+      summary: Create a new Core Client
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewCoreClient'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoreClientInfo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    get:
+      tags:
+        - Core Client
+      summary: Get a list of all registered Core Clients
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoreClientsInfo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/coreclient/{client_id}/actions':
+    get:
+      tags:
+        - Core Client
+      summary: Pending actions
+      description: Returns actions with a status of 'Pending'
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Core Client Id
+            type: string
+          name: client_id
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionsInfo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/coreclient/{client_id}/action/{action_id}':
+    get:
+      tags:
+        - Core Client
+      summary: Details of an action
+      description: 'Returns the details of an action including Type, Status, Timestamp and Expiry Time.'
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Core Client Id
+            type: string
+          name: client_id
+          in: path
+        - required: true
+          schema:
+            title: Action Id
+            type: string
+          name: action_id
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionDetails'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - Core Client
+      summary: Approve action
+      description: Approve a specific action
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Core Client Id
+            type: string
+          name: client_id
+          in: path
+        - required: true
+          schema:
+            title: Action Id
+            type: string
+          name: action_id
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionDetails'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Core Client
+      summary: Reject a specific action
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Core Client Id
+            type: string
+          name: client_id
+          in: path
+        - required: true
+          schema:
+            title: Action Id
+            type: string
+          name: action_id
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionDetails'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/coreclient/{client_id}/wallets':
+    get:
+      tags:
+        - Core Client
+      summary: Get connected wallets
+      description: Obtain details on connected wallets and wallets pending approval
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Core Client Id
+            type: string
+          name: client_id
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  wallets:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CoreClientWallet'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/coreclient/{client_id}/sweep':
+    post:
+      tags:
+        - Sweep
+      summary: New sweep
+      description: Initiate a new sweep transactions and set parameters for the transaction.
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Core Client Id
+            type: string
+          name: client_id
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Sweep'
+        required: true
+      responses:
+        '200':
+          description: Response is Transaction ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TxId'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/coreclient/{client_id}/sweep/{tx_id}':
+    get:
+      tags:
+        - Sweep
+      summary: Get sweep status
+      description: Obtain details on a sweep transaction status
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Core Client Id
+            type: string
+          name: client_id
+          in: path
+        - required: true
+          schema:
+            title: TxId
+            type: string
+          name: tx_id
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SweepInfo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/coreclient/{client_id}/sign':
+    post:
+      tags:
+        - Core Client Sign
+      summary: Sign a hash
+      description: 'Signs a hash message with the core client''s BLS key. The message should be no bigger than 64 bytes, hex encoded'
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+        - required: true
+          schema:
+            title: Core Client Id
+            type: string
+          name: client_id
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CoreClientSign'
+        required: true
+      responses:
+        '200':
+          description: Response is the message signature.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoreClientSignature'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /coreclient/verify:
+    post:
+      tags:
+        - Core Client Sign
+      summary: Verify signature
+      description: Verifies a signature
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CoreClientVerifySignature'
+        required: true
+      responses:
+        '200':
+          description: Signature is valid.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Signature is not valid.
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /coreclient/init:
+    post:
+      summary: Initiate core client onboarding
+      description: Initiates an automated approver core client registration
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-nonce
+          in: header
+        - required: false
+          schema:
+            title: x-timestamp
+            type: string
+          name: x-timestamp
+          in: header
+        - required: false
+          schema:
+            title: x-sign
+            type: string
+          name: x-sign
+          in: header
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                blsPublicKey:
+                  type: string
+                ecPublicKey:
+                  type: string
+              x-examples:
+                example-1:
+                  name: ''
+                  blsPublicKey: ''
+                  ecPublicKey: ''
+        required: true
+      responses:
+        '200':
+          description: Signature is valid.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Signature is not valid.
+        '404':
+          $ref: '#/components/responses/NotFound'
+      operationId: ''
+      tags:
+        - AutomatedApprover
+    parameters: []
+  /coreclient/finish:
+    post:
+      summary: Finish core client onboarding
+      description: Finishes core client registration by storing the signed IDDoc
+      parameters:
+        - required: false
+          schema:
+            title: x-nonce
+            type: string
+          name: x-api-xkp
+          in: header
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              x-examples:
+                example-1:
+                  name: ''
+                  blsPublicKey: ''
+                  ecPublicKey: ''
+              properties:
+                idDocSignatureHex:
+                  type: string
+        required: true
+      responses:
+        '200':
+          description: Signature is valid.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Signature is not valid.
+        '404':
+          $ref: '#/components/responses/NotFound'
+      tags:
+        - AutomatedApprover
+    parameters: []
+  /coreclient/feed:
+    parameters: []
+    get:
+      summary: Get core client actions feed
+      operationId: get-coreclient-feed
+      responses:
+        '200':
+          description: OK
+      description: WebSocket feed for core client actions
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: x-api-zkp
+      tags:
+        - AutomatedApprover
+  '/coreclient/action/{action_id}':
+    parameters:
+      - schema:
+          type: string
+        name: action_id
+        in: path
+        required: true
+    get:
+      summary: Get action messages
+      operationId: get-coreclient-action-action_id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  messages:
+                    type: array
+                    items:
+                      type: string
+      description: Returns action messages for action_id
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: x-api-zkp
+      tags:
+        - AutomatedApprover
+    put:
+      summary: Approve action
+      operationId: put-coreclient-action-action_id
+      responses:
+        '200':
+          description: OK
+      description: Approve acction_id
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: x-api-zkp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                signatures:
+                  type: array
+                  items:
+                    type: string
+      tags:
+        - AutomatedApprover
+    delete:
+      summary: Reject action
+      operationId: delete-coreclient-action-action_id
+      responses:
+        '200':
+          description: OK
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: x-api-zkp
+      description: Reject action_id
+      tags:
+        - AutomatedApprover
+  '/company/{company_id}/fund/{fund_id}/wallet/{wallet_id}/policy':
+    parameters:
+      - schema:
+          type: string
+        name: company_id
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: fund_id
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: wallet_id
+        in: path
+        required: true
+    put:
+      summary: ''
+      operationId: update-wallet-policy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                policy_id:
+                  type: string
+                threshold:
+                  type: integer
+                members:
+                  type: array
+                  items:
+                    type: string
+                type:
+                  type: string
+            examples:
+              update-policy-tx:
+                value:
+                  policy_id: 26YgyhZaTDttAqN6shVr5lQgUCs
+                  threshold: 1
+                  members:
+                    - EM6rPkjEA479p7f3sXxbUPH7TfMzvoVv9eEEGR6w8gqU
+                    - B12SfpdA2WKPvEFsyNKh1bwEtCKtYfAcQ9FL2NArDHgN
+                  type: policy-tx
+      responses:
+        '200':
+          description: OK
+      description: Update fund wallet withdraw or transfer policy
+      tags:
+        - Wallet
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      description: ApiKeyAuth consists of the following parameters.
+      type: apiKey
+      in: header
+      name: X-API-KEY
+  responses:
+    Ok:
+      description: Seuccessful response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/OkResponse'
+    NotFound:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Conflict:
+      description: The specified resource already exists
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    OkResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        msg:
+          type: string
+      example:
+        code: 200
+        msg: ok
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        msg:
+          type: string
+        detail:
+          type: object
+          properties:
+            reason:
+              type: string
+    TxId:
+      properties:
+        tx_id:
+          type: string
+        status:
+          enum:
+            - new
+            - existing
+          type: string
+      example:
+        tx_id: 9827feec4eae4e80bda3daa7c3b97add
+        status: new
+    SwapTxId:
+      properties:
+        tx_id:
+          type: string
+        tx_url:
+          type: string
+        status:
+          enum:
+            - new
+            - existing
+      example:
+        tx_id: bda3daa7c3b97add9827feec4eae4e80
+        tx_url: 'https://qredo.netwok/aswpbda3daa7c3b97add9827feec4eae4e80'
+        status: new
+    Assets:
+      type: object
+      properties:
+        assets:
+          title: Assets list
+          type: object
+          properties:
+            code:
+              title: Asset code
+              type: string
+            name:
+              title: Asset name
+              type: string
+            unitCode:
+              title: Unit code
+              type: string
+            scale:
+              title: Unit scale
+              description: Unit scale.
+              type: number
+            enabled:
+              title: Unit enabled
+              description: Unit enabled
+              type: boolean
+      example:
+        assets:
+          code: BTC-TESTNET
+          name: Bitcoin Testnet
+          unitCode: BTC-TEST
+          scale: 100000000
+          enabled: true
+    FeesRequest:
+      type: object
+      properties:
+        type:
+          title: Transaction type
+          type: string
+          enum:
+            - withdraw
+            - transferOut
+            - swap
+        asset:
+          title: Asset code
+          type: string
+        amount:
+          title: Amount
+          type: number
+      example:
+        type: transferOut
+        asset: BTC-TESTNET
+        amount: 200000
+    FeesResponse:
+      type: object
+      properties:
+        netAmount:
+          title: Net amount
+          type: number
+        amountToSend:
+          title: Amount to send
+          type: number
+        fees:
+          title: Fees
+          type: number
+      example:
+        netAmount: 200000
+        amountToSend: 200200
+        fees: 200
+    Company:
+      title: Company
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+        city:
+          title: City
+          type: string
+        country:
+          title: Country code
+          type: string
+          description: ISO 3166-1 country code
+        domain:
+          title: Domain
+          type: string
+        ref:
+          title: Reference
+          type: string
+          description: Company reference ID
+          default: ''
+        company_id:
+          title: Company Id
+          type: string
+      example:
+        name: ACME Corp
+        city: Paris
+        country: FR
+        domain: acme.com
+        ref: 9827feec-4eae-4e80-bda3-daa7c3b97add
+    CreateCompanyResponse:
+      title: CreateCompanyResponse
+      description: A Company ID is generated when a new company is created.
+      required:
+        - company_id
+        - ref
+      type: object
+      properties:
+        ref:
+          title: Reference
+          type: string
+          description: Company reference ID
+          default: ''
+        company_id:
+          title: Company ID
+          type: string
+          description: Company ID
+    TrustedParty:
+      title: Trusted Network
+      type: object
+      properties:
+        company_id:
+          type: string
+        total_count:
+          type: integer
+        list:
+          type: object
+          properties:
+            trusted_entity_id:
+              type: string
+            name:
+              type: string
+            address:
+              type: string
+            type:
+              type: string
+              title: Trusted entity type
+            created:
+              description: Timestamp of when the trusted party was created in Epoch time.
+              type: integer
+    TrustedPartyList:
+      title: TrustedPartyList
+      type: object
+      properties:
+        company_id:
+          title: Company id
+          type: string
+          description: The company id.
+        total_count:
+          description: Total count in integer format of the number of matches from a trusted party search.
+          title: Total count
+          type: integer
+        list:
+          title: List
+          description: Array showing details of trusted parties that comprise the total count.
+          type: array
+          items:
+            $ref: '#/components/schemas/TrustedParty'
+      x-examples:
+        example:
+          total_count: 1
+          list:
+            - trusted_entity_id: 1bzn6ex7fRxKQsSqCJDDpyb4uaS
+              name: Alice Doe
+              address: alice@example.com
+              created: 1589984018
+    TrustedPartyNew:
+      title: TrustedPartyNew
+      required:
+        - address
+      type: object
+      properties:
+        address:
+          title: Address
+          type: string
+          description: Email address of the user.
+      example:
+        address: alice@example.com
+    AssetAmount:
+      title: AssetAmount
+      required:
+        - symbol
+        - amount
+      type: object
+      properties:
+        symbol:
+          title: Asset symbol
+          description: 'This is a symbol of the cryptocurrency or tokenized asset, e.g., BTC for Bitcoin.'
+          type: string
+        amount:
+          title: Amount
+          type: number
+          description: The amount of each cryptocurrency or tokenized asset in Satoshis. Satoshi figures are in whole numbers.
+    DepositAddress:
+      title: DepositAddress
+      required:
+        - wallet_type
+        - fund_id
+      type: object
+      properties:
+        wallet_type:
+          title: Wallet type
+          type: string
+          description: 'This declares the wallet type, which is specified by currency. Example is BTC or ETH.'
+        fund_id:
+          title: Fund ID
+          type: string
+          description: This is the fund id (from Fund API) to assign the wallet address to.
+      example:
+        wallet_type: BTC
+        fund_id: a1wXN2saAiwJLQtaEkf6eS1K8un49sqNhcN8qKPSBBVe
+    DepositAddressDetail:
+      title: DepositAddressDetail
+      required:
+        - wallet_type
+        - fund_id
+        - address
+        - amount
+        - fund
+      type: object
+      properties:
+        wallet_type:
+          title: Wallet type
+          type: string
+          description: 'This declares the wallet type, which is specified by currency. Example is BTC or ETH.'
+        fund_id:
+          title: Fund ID
+          type: string
+          description: This is the fund id (from Fund API) to assign the wallet address to.
+        address:
+          title: Deposit wallet address
+          type: string
+          description: Deposit wallet address
+        amount:
+          title: Amount
+          type: number
+          description: The amount of currency in the wallet.
+        fund:
+          $ref: '#/components/schemas/FundDetail'
+      example:
+        address: 1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2
+        wallet_type: BTC
+        amount: 10
+        fund_id: a1wXN2saAiwJLQtaEkf6eS1K8un49sqNhcN8qKPSBBVe
+        fund:
+          name: Fund 1
+          principals:
+            - PSBBVea1wXN2sa7dD1K8un49sqNhcN8qKAiwJLQtaZgx
+          custody_group_id: Vea1wXN2sa7dD1K8un49sqNhcN8qKAiwJLQtaZgxPSBB
+          custody_group:
+            name: Custody group 2/3
+            threshold: 2
+            settle: true
+            transfer: true
+            account_codes:
+              - PSBBVea1wXN2sa7dD1K8un49sqNhcN8qKAiwJLQtaZgx
+              - 49sqNhcN8qKAiwJPSBBVea1wXN2sa7dD1K8unLQtaZgx
+              - a1wXN2sa7PSBBVedD1K8un49sqNhcN8qKAiwJLQtaZgx
+          fund_holdings:
+            - symbol: BTC
+              amount: 12
+            - symbol: ETH
+              amount: 504.77
+            - symbol: USDT
+              amount: 200451
+    Fund:
+      title: Fund
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          title: Fund name
+          type: string
+          description: The name of the fund.
+        description:
+          title: Fund description
+          type: string
+          description: A description for the fund.
+        custodygroup_withdraw:
+          $ref: '#/components/schemas/NewCustodyGroup'
+        custodygroup_tx:
+          $ref: '#/components/schemas/NewCustodyGroup'
+        wallets:
+          type: array
+          items:
+            $ref: '#/components/schemas/NewWallet'
+      description: 'A fund is the organisational unit that customers assign their portfolios into. Administrators, Principals and Custody Groups are assigned to each individual fund. There is only one Custody Group per Fund.'
+      example:
+        name: Fund 1
+        description: Fund for demonstration purposes
+        custodygroup_withdraw:
+          threshold: 3
+          members:
+            - 1dnfLZolYD72zasqtmtTXXoaNNJ
+            - 1dnfLeHXkaxasdg4akvxglwKTKV
+            - 1dnfLsfgsaxQPs2v5kvxglwKTKV
+            - 1dnfLeHXkaxQPs2v5kvxglwKTKV
+        custodygroup_tx:
+          threshold: 3
+          members:
+            - 1dnfLZolYD72zasqtmtTXXoaNNJ
+            - 1dnfLeHXkaxasdg4akvxglwKTKV
+            - 1dnfLsfgsaxQPs2v5kvxglwKTKV
+            - 1dnfLeHXkaxQPs2v5kvxglwKTKV
+        wallets:
+          - name: New wallet
+            asset: BTC-TESTNET
+          - name: New wallet with custom custody group
+            asset: BTC-TESTNET
+            custodygroup_withdraw:
+              threshold: 1
+              members:
+                - 1dnfLZolYD72zasqtmtTXXoaNNJ
+                - 1dnfLeHXkaxasdg4akvxglwKTKV
+            custodygroup_tx:
+              threshold: 1
+              members:
+                - 1dnfLZolYD72zasqtmtTXXoaNNJ
+                - 1dnfLeHXkaxasdg4akvxglwKTKV
+          - name: New dedicated wallet
+            asset: BTC-TESTNET
+            type: 1
+            connect:
+              - counterparty_id: 6WM255GuS9ikHHDVdjZNXjrt3CzGg4HvXRbw94qmqjVm
+                client_id: A12345
+    NewWallet:
+      title: Fund wallet
+      type: object
+      properties:
+        name:
+          title: Wallet name
+          type: string
+        asset:
+          title: Wallet asset
+          type: string
+        custodygroup_withdraw:
+          oneOf:
+            - $ref: '#/components/schemas/NewCustodyGroup'
+            - nullable: true
+        custodygroup_tx:
+          oneOf:
+            - $ref: '#/components/schemas/NewCustodyGroup'
+            - nullable: true
+        type:
+          $ref: '#/components/schemas/WalletType'
+        connect:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/ConnectAccount'
+    WalletType:
+      title: Wallet type
+      type: integer
+      default: 0
+      description: |
+        Wallet type:
+          * `0` - Standard wallet
+          * `1` - Dedicated wallet
+          * `2` - Multi-counterparty wallet
+    ConnectAccount:
+      title: Connect account
+      description: Connect external counterparty
+      type: object
+      properties:
+        counterparty_id:
+          title: Counterparty ID
+          type: string
+        client_id:
+          title: Client ID
+          type: string
+    ExchangesList:
+      title: List of available exchanges
+      type: object
+      properties:
+        exchanges:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              url:
+                type: string
+              logourl:
+                type: string
+    FundWalletInfo:
+      title: Wallet info
+      type: object
+      properties:
+        wallet_id:
+          type: string
+        name:
+          type: string
+        asset:
+          type: string
+        type:
+          $ref: '#/components/schemas/WalletType'
+        status:
+          type: string
+        address:
+          title: Deposit address
+          type: string
+        address_type:
+          type: string
+        short_code:
+          type: string
+        balance:
+          title: Current balance of asset
+          type: number
+        custodygroup_withdraw:
+          title: Withdrawal custody group ID
+          type: string
+        custodygroup_tx:
+          title: Transfer custody group ID
+          type: string
+        policy_withdraw:
+          $ref: '#/components/schemas/Policy'
+        policy_tx:
+          $ref: '#/components/schemas/Policy'
+        connected:
+          title: Connected external counterparties
+          nullable: true
+          type: array
+          items:
+            type: object
+            properties:
+              client_id:
+                type: string
+              counterparty_id:
+                type: string
+              name:
+                type: string
+              status:
+                type: string
+    FundHistoryItem:
+      title: Wallet history item
+      type: object
+      properties:
+        wallet_id:
+          type: string
+        tx_id:
+          type: string
+        chain_tx_id:
+          type: string
+        asset:
+          type: string
+        amount:
+          title: Amount sent (positive) or received (negative)
+          type: number
+        fee:
+          title: Fee paid (negative number)
+          type: number
+        net_amount:
+          title: Net amount of the transaction sent (positive) or received (negative)
+          type: number
+        timestamp:
+          title: Unix (epoch) time of the transaction
+          type: number
+    FundWalletHistory:
+      title: Wallet history
+      type: object
+      properties:
+        history:
+          title: Transaction history
+          type: array
+          items:
+            $ref: '#/components/schemas/FundHistoryItem'
+    FundAsset:
+      title: Fund asset
+      type: object
+      properties:
+        assets:
+          title: Fund assets
+          type: array
+          items:
+            type: string
+      example:
+        assets:
+          - BTC-TESTNET
+    WalletIDList:
+      title: List of wallet IDs
+      type: object
+      properties:
+        wallets:
+          title: Wallets
+          type: array
+          items:
+            type: string
+      example:
+        wallets:
+          - KGMWoEgmTZ9Voz9EAbtTHk7A2rhQra4aPcscYNLGePci
+          - 9Voz9EAbtTHk7A2rhQgmTZYNLGePcira4aPcscKGMWoE
+    FundWallet:
+      title: Fund asset
+      type: object
+      properties:
+        wallets:
+          title: A list of new wallets to be created
+          type: array
+          items:
+            $ref: '#/components/schemas/NewWallet'
+      example:
+        wallets:
+          - name: New wallet
+            asset: BTC-TESTNET
+          - name: New wallet with custom custody group
+            asset: BTC-TESTNET
+            custodygroup_withdraw:
+              threshold: 1
+              members:
+                - 1dnfLZolYD72zasqtmtTXXoaNNJ
+                - 1dnfLeHXkaxasdg4akvxglwKTKV
+            custodygroup_tx:
+              threshold: 1
+              members:
+                - 1dnfLZolYD72zasqtmtTXXoaNNJ
+                - 1dnfLeHXkaxasdg4akvxglwKTKV
+          - name: New dedicated wallet
+            asset: BTC-TESTNET
+            type: 1
+            connect:
+              - counterparty_id: 6WM255GuS9ikHHDVdjZNXjrt3CzGg4HvXRbw94qmqjVm
+                client_id: A12345
+    CreateFundResponse:
+      title: CreateFundResponse
+      type: object
+      properties:
+        fund_id:
+          title: Fund ID
+          type: string
+          description: The ID of the newly created fund
+        custodygroup_withdraw:
+          title: Withdraw custody group ID
+          description: ID for the custody group of withdraw.
+          type: string
+        custodygroup_tx:
+          title: Transfer custody group ID
+          description: ID for the custody group of transfer.
+          type: string
+      example:
+        fund_id: 1dnfLZolYD72zasqtmtTXXoaNNJ
+        custodygroup_withdraw: 1dnfLYHOGn8gScmInkMXSPzitj5
+        custodygroup_tx: 1dnfLeHXkaxQPs2v5kvxglwKTKV
+    FundDetail:
+      title: FundDetail
+      type: object
+      properties:
+        fund_id:
+          title: Fund ID
+          type: string
+        name:
+          title: Fund name
+          type: string
+          description: The name of the fund.
+        description:
+          title: Fund description
+          type: string
+        custodygroup_withdraw:
+          title: Withdrawal custody group ID
+          type: string
+        custodygroup_tx:
+          title: Transfer custody group ID
+          type: string
+        policy_withdraw:
+          $ref: '#/components/schemas/Policy'
+        policy_tx:
+          $ref: '#/components/schemas/Policy'
+        members:
+          title: Fund members
+          type: array
+          items:
+            $ref: '#/components/schemas/FundMember'
+        assets:
+          title: Fund assets
+          type: array
+          items:
+            type: string
+          description: The fund's asset types
+        wallets:
+          title: Fund wallets
+          type: array
+          items:
+            $ref: '#/components/schemas/FundWalletInfo'
+          description: The fund's wallets
+      description: 'A fund is the organisational unit that customers assign their portfolios into. Administrators, Principals and Custody Groups are assigned to each individual fund. There is only one Custody Group per Fund.'
+      example:
+        fund_id: 1dnpG2K2A5hMOVjGFl1DrsbnvmS
+        name: Fund 1
+        description: Fund for demonstration purposes
+        custodygroup_withdraw: 1nL7QOoLqPDq89dcdhue6LJaFUS
+        custodygroup_tx: 1nL7QUCW15xaV0jggAv1mFSR9jp
+        policy_withdraw:
+          id: 1nL7QOoLqPDq89dcdhue6LJaFUS
+          name: withdraw policy
+          threshold: 2
+          members:
+            - type: user
+              id: fVj9DV2VtWCZES5Hb8J6w14MdeAq3owKmfTVcwy6TKqh
+              name: John Doe
+              user:
+                firstName: John
+                lastName: Doe
+                email: john.doe@acme.corp
+                username: john.doe
+            - type: user
+              id: tWCZES5Hb8J6w14MdefVj9DV2VAq3owKmfTVcwy6TKqh
+              name: Jane Doe
+              user:
+                firstName: Jane
+                lastName: Doe
+                email: jane.doe@acme.corp
+                username: jane.doe
+            - type: core-client
+              id: 6w14tWCZES5Hb8JMdefVj9DV2VAq3owKmfTVcwy6TKqh
+              name: core client 1
+              coreClient:
+                name: core client 1
+        policy_tx:
+          id: 1nL7QUCW15xaV0jggAv1mFSR9jp
+          name: tx policy
+          threshold: 2
+          members:
+            - type: user
+              id: fVj9DV2VtWCZES5Hb8J6w14MdeAq3owKmfTVcwy6TKqh
+              name: John Doe
+              user:
+                firstName: John
+                lastName: Doe
+                email: john.doe@acme.corp
+                username: john.doe
+            - type: user
+              id: tWCZES5Hb8J6w14MdefVj9DV2VAq3owKmfTVcwy6TKqh
+              name: Jane Doe
+              user:
+                firstName: Jane
+                lastName: Doe
+                email: jane.doe@acme.corp
+                username: jane.doe
+            - type: core-client
+              id: 6w14tWCZES5Hb8JMdefVj9DV2VAq3owKmfTVcwy6TKqh
+              name: core client 1
+              coreClient:
+                name: core client 1
+        members:
+          entity:
+            id: 1nKlfvP0U2HtHPmWDUKWJ4HR0xp
+            accountCode: 3Xjk46grBSLRL6mYxB1NeoAVhgwiEHvAoehhYYwZkAYU
+            name: ACME Corp
+            initials: A
+            type: company
+            company:
+              name: ACME Corp
+          permissions:
+            admin: true
+        assets:
+          - BTC-TESTNET
+        wallets:
+          - wallet_id: 5Hb8J6w14MdeAq3owKmfTVcwy6TKqhfVj9DV2VtWCZES
+            name: New wallet
+            asset: BTC-TESTNET
+            type: 213312000
+            status: ready
+            address: mfXXBW8Tmzkd7bRKKsUmjucpLQLThv8eYX
+            address_type: P2PKH
+            short_code: buddy harsh stick
+            balance: 0
+            custodygroup_withdraw: 1nL7QOoLqPDq89dcdhue6LJaFUS
+            custodygroup_tx: 1nL7QUCW15xaV0jggAv1mFSR9jp
+            policy_withdraw:
+              id: 1nL7QOoLqPDq89dcdhue6LJaFUS
+              name: withdraw policy
+              threshold: 2
+              members:
+                - type: user
+                  id: fVj9DV2VtWCZES5Hb8J6w14MdeAq3owKmfTVcwy6TKqh
+                  name: John Doe
+                  user:
+                    firstName: John
+                    lastName: Doe
+                    email: john.doe@acme.corp
+                    username: john.doe
+                - type: user
+                  id: tWCZES5Hb8J6w14MdefVj9DV2VAq3owKmfTVcwy6TKqh
+                  name: Jane Doe
+                  user:
+                    firstName: Jane
+                    lastName: Doe
+                    email: jane.doe@acme.corp
+                    username: jane.doe
+                - type: core-client
+                  id: 6w14tWCZES5Hb8JMdefVj9DV2VAq3owKmfTVcwy6TKqh
+                  name: core client 1
+                  coreClient:
+                    name: core client 1
+            policy_tx:
+              id: 1nL7QUCW15xaV0jggAv1mFSR9jp
+              name: tx policy
+              threshold: 2
+              members:
+                - type: user
+                  id: fVj9DV2VtWCZES5Hb8J6w14MdeAq3owKmfTVcwy6TKqh
+                  name: John Doe
+                  user:
+                    firstName: John
+                    lastName: Doe
+                    email: john.doe@acme.corp
+                    username: john.doe
+                - type: user
+                  id: tWCZES5Hb8J6w14MdefVj9DV2VAq3owKmfTVcwy6TKqh
+                  name: Jane Doe
+                  user:
+                    firstName: Jane
+                    lastName: Doe
+                    email: jane.doe@acme.corp
+                    username: jane.doe
+                - type: core-client
+                  id: 6w14tWCZES5Hb8JMdefVj9DV2VAq3owKmfTVcwy6TKqh
+                  name: core client 1
+                  coreClient:
+                    name: core client 1
+          - wallet_id: 7MkABERLqL3FTNouykXtftkyBoseza4KfQ6YKQcS1xH6
+            name: New dedicated wallet
+            asset: BTC-TESTNET
+            type: 1
+            status: ready
+            address: mndLfcZYSdN7uow8MJWCCffBaAQsrqW217
+            address_type: P2PKH
+            short_code: fatigue infant conduct
+            balance: 1000000
+            custodygroup_withdraw: 1nL7QOoLqPDq89dcdhue6LJaFUS
+            custodygroup_tx: 1nL7QUCW15xaV0jggAv1mFSR9jp
+            policy_withdraw:
+              id: 1nL7QOoLqPDq89dcdhue6LJaFUS
+              name: withdraw policy
+              threshold: 2
+              members:
+                - type: user
+                  id: fVj9DV2VtWCZES5Hb8J6w14MdeAq3owKmfTVcwy6TKqh
+                  name: John Doe
+                  user:
+                    firstName: John
+                    lastName: Doe
+                    email: john.doe@acme.corp
+                    username: john.doe
+                - type: user
+                  id: tWCZES5Hb8J6w14MdefVj9DV2VAq3owKmfTVcwy6TKqh
+                  name: Jane Doe
+                  user:
+                    firstName: Jane
+                    lastName: Doe
+                    email: jane.doe@acme.corp
+                    username: jane.doe
+                - type: core-client
+                  id: 6w14tWCZES5Hb8JMdefVj9DV2VAq3owKmfTVcwy6TKqh
+                  name: core client 1
+                  coreClient:
+                    name: core client 1
+            policy_tx:
+              id: 1nL7QUCW15xaV0jggAv1mFSR9jp
+              name: tx policy
+              threshold: 2
+              members:
+                - type: user
+                  id: fVj9DV2VtWCZES5Hb8J6w14MdeAq3owKmfTVcwy6TKqh
+                  name: John Doe
+                  user:
+                    firstName: John
+                    lastName: Doe
+                    email: john.doe@acme.corp
+                    username: john.doe
+                - type: user
+                  id: tWCZES5Hb8J6w14MdefVj9DV2VAq3owKmfTVcwy6TKqh
+                  name: Jane Doe
+                  user:
+                    firstName: Jane
+                    lastName: Doe
+                    email: jane.doe@acme.corp
+                    username: jane.doe
+                - type: core-client
+                  id: 6w14tWCZES5Hb8JMdefVj9DV2VAq3owKmfTVcwy6TKqh
+                  name: core client 1
+                  coreClient:
+                    name: core client 1
+            connected:
+              counterparty_id: 6WM255GuS9ikHHDVdjZNXjrt3CzGg4HvXRbw94qmqjVm
+              name: Test Excahnge
+              client_id: A12345
+              status: connected
+    Policy:
+      title: Custody policy
+      type: object
+      properties:
+        id:
+          title: Polocy ID
+          type: string
+        name:
+          title: Policy name
+          type: string
+        threshold:
+          title: Custody group threshold
+          description: Minimum number of custodian approval signatures out of the total number for a transaction to happen.
+          type: integer
+        members:
+          title: Custody group members
+          description: Members that are assigned as custodians to approve transactions..
+          type: array
+          items:
+            $ref: '#/components/schemas/Entity'
+    FundDepositResponse:
+      title: FundDepositResponse
+      type: object
+      properties:
+        total_count:
+          title: Total count
+          type: integer
+        list:
+          title: List
+          type: array
+          items:
+            type: object
+            properties:
+              asset:
+                type: string
+                description: Name of asset
+              address:
+                title: Address of asset
+                type: string
+              balance:
+                title: Current balance of asset
+                type: number
+      example:
+        total_count: 0
+        list:
+          - asset: BTC-TESTNET
+            address: n2GoFtw8aTH6yoMK9UW3fxrSp3iTL6jwUX
+            balance: 0
+    TxHistoryItem:
+      description: TxHistoryItem is a single record of a transaction history
+      properties:
+        TxID:
+          type: string
+        accountNo:
+          type: string
+        address:
+          type: string
+        amount:
+          format: int64
+          type: integer
+        asset:
+          type: string
+        benefitOf:
+          type: string
+        chainTxID:
+          type: string
+        counterpartyID:
+          type: string
+        counterpartyName:
+          type: string
+        expireTime:
+          format: int64
+          type: integer
+        fees:
+          format: int64
+          type: integer
+        fundID:
+          type: string
+        netAmount:
+          format: int64
+          type: integer
+        reference:
+          type: string
+        status:
+          enum:
+            - pending_initiate
+            - pending
+            - expired
+            - approved
+            - initiate_rejected
+            - custody_rejected
+            - chain_rejected
+            - taker_pending
+            - taker_approved
+          type: string
+        timestamp:
+          format: int64
+          type: integer
+        type:
+          enum:
+            - none
+            - deposit
+            - withdraw
+            - transferIn
+            - transferOut
+            - swap
+            - swapIn
+            - swapOut
+          type: string
+      type: object
+    TxLedger:
+      title: TxLedger
+      description: Transaction ledger
+      type: object
+      properties:
+        List:
+          items:
+            $ref: '#/components/schemas/TxHistoryItem'
+          type: array
+        Total:
+          type: integer
+      example:
+        Total: 2
+        List:
+          - TxID: 1kEe4G9mopRzQk3HKnnebfCj5Dh
+            chainTxID: 8frWYAHJL6wvpY7ioT35sKZ5kyqaSt6kLdTaSShZ11Gb
+            fundID: 1kEYnRGrYmuhNLFvVhwiiqj6XcM
+            timestamp: 1605269988
+            expireTime: 1640998800
+            status: approved
+            type: transferOut
+            asset: BTC-TESTNET
+            amount: 2803
+            fees: 3
+            netAmount: 2800
+            counterpartyID: 1kEY6PBbhiseE7RfifsMCDusXL8
+            counterpartyName: ACME Corp
+            address: ''
+            reference: CX15R99XX
+            benefitOf: John Smith
+            accountNo: 123-XX
+          - TxID: ''
+            chainTxID: EX79B14iusvPjnBaZzaEunxQppdBayGW7KEd2Y8hWtQ8
+            fundID: 1kEYnRGrYmuhNLFvVhwiiqj6XcM
+            timestamp: 1605267445
+            expireTime: 0
+            status: ''
+            type: deposit
+            asset: BTC-TESTNET
+            amount: 10000
+            fees: 0
+            netAmount: 10000
+            counterpartyID: ''
+            counterpartyName: ''
+            address: mjyWz5ZAXAeG9FFbigDyt3WqebrGohuemk
+            reference: ''
+            benefitOf: ''
+            accountNo: ''
+    FundSearchResult:
+      title: FundSearchResult
+      description: Fund seearch result
+      type: object
+      properties:
+        total_count:
+          title: Total count
+          description: Total count in integer format of the number of funds.
+          type: integer
+        list:
+          title: List
+          description: Array showing details of each fund.
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                title: Name
+                description: Name of the Fund.
+                type: string
+              id:
+                title: ID
+                description: fund ID.
+                type: string
+      example:
+        total_count: 2
+        list:
+          - name: Fund 1
+            id: 1dnpG2K2A5hMOVjGFl1DrsbnvmS
+          - name: Fund 2
+            id: 2cnpG2D2A5hMOVjGFl1DrsbnvmN
+    EntityType:
+      title: Entity type
+      type: string
+      enum:
+        - user
+        - company
+        - core-client
+    Entity:
+      title: Entity
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        accountCode:
+          type: string
+        initials:
+          type: string
+        type:
+          $ref: '#/components/schemas/EntityType'
+        company:
+          type: object
+          nullable: true
+          properties:
+            name:
+              type: string
+        user:
+          type: object
+          nullable: true
+          properties:
+            firstName:
+              type: string
+            lastName:
+              type: string
+            email:
+              type: string
+            userName:
+              type: string
+        core-client:
+          type: object
+          nullable: true
+          properties:
+            name:
+              type: string
+    FundMember:
+      title: FundMember
+      type: object
+      properties:
+        entity:
+          $ref: '#/components/schemas/Entity'
+        permissions:
+          $ref: '#/components/schemas/Permissions'
+      description: A fund member is a user who has certain permissions within a fund
+      example:
+        entity:
+          accountCode: 3Xjk46grBSLRL6mYxB1NeoAVhgwiEHvAoehhYYwZkAYU
+          company:
+            name: ACME Corp
+          id: 1nKlfvP0U2HtHPmWDUKWJ4HR0xp
+          initials: A
+          name: ACME Corp
+        type: company
+        permissions:
+          admin: true
+    FundMembersList:
+      title: FundMembersList
+      required:
+        - total_count
+        - list
+      type: object
+      properties:
+        total_count:
+          type: integer
+        list:
+          type: object
+          properties:
+            user_id:
+              type: string
+            firstName:
+              type: string
+            lastName:
+              type: string
+            created:
+              type: integer
+            permissions:
+              $ref: '#/components/schemas/Permissions'
+      example:
+        total_count: 2
+        list:
+          - user_id: AAA778f3DQRUZ7vzk3AJwk3o7w4gdEVSnRZ8oZuQBP3E
+            firstName: Peter
+            lastName: Jackson
+            created: 1593070611
+            permissions:
+              admin: true
+          - user_id: 2mZUKu9rH49HfRN7pAfsVT428dp2rnBX8v1Xob25KXq1
+            firstName: Luke
+            lastName: Skywalker
+            created: 1593089630
+            permissions:
+              admin: true
+    FundWhitelist:
+      title: FundWhitelist
+      description: List of whitelisted addresses for a fund.
+      type: object
+      properties:
+        total_count:
+          title: Total count
+          description: Total count in integer format of the number of whitelisted addresses in a fund.
+          type: integer
+        list:
+          title: List
+          description: Array showing details of each whitelisted address.
+          type: array
+          items:
+            type: object
+            properties:
+              asset:
+                title: Asset
+                type: string
+              address:
+                title: Address
+                type: string
+              name:
+                title: Name
+                type: string
+      example:
+        total_count: 2
+        list:
+          - name: addres1
+            asset: BTC-TESTNET
+            address: bc1qgr090hdm6y5wzwqc2r57rlaytx5v7ytm2ktq98
+          - name: address2
+            asset: BTC
+            address: tb1qd5jkskth8q46k5ka76uqnvqsgta2ncrgkx7ud8
+    AddFundWhitelist:
+      title: AddFundWhitelist
+      description: Add a whitelisted address to a fund.
+      type: object
+      properties:
+        asset:
+          title: Asset
+          type: string
+        address:
+          title: Address
+          type: string
+        name:
+          title: Name
+          type: string
+          description: Name of the whitelist address.
+      example:
+        name: addres1
+        asset: BTC-TESTNET
+        address: bc1qgr090hdm6y5wzwqc2r57rlaytx5v7ytm2ktq98
+    Asset:
+      title: Asset
+      type: object
+      properties:
+        code:
+          title: Code
+          description: Code of the network.
+          type: string
+        name:
+          title: Name
+          type: string
+        unitCode:
+          title: UnitCode
+          description: Code of the currency.
+          type: string
+    Holdings:
+      title: Holdings
+      description: View all holdings across all funds held by a customer.
+      required:
+        - holdings
+      type: object
+      properties:
+        holdings:
+          title: Holdings
+          type: array
+          items:
+            $ref: '#/components/schemas/Holding'
+      example:
+        total_count: 3
+        holdings:
+          - code: BTC
+            amount: 4266
+          - code: ETH
+            amount: 1077
+          - code: USDT
+            amount: 500451
+    Holding:
+      title: Holding
+      description: View all assets held by a company’s fund.
+      required:
+        - code
+        - amount
+      type: object
+      properties:
+        symbol:
+          title: Currency symbol
+          type: string
+          description: 'This is a symbol of the cryptocurrencies or securities held within the fund. For example, the symbol for Bitcoin is BTC.'
+        amount:
+          title: Amount
+          type: number
+          description: The amount of each cryptocurrency or tokenized asset.
+    Transfer:
+      title: Transfer
+      required:
+        - wallet_id
+        - counterparty_wallet_id
+        - amount
+        - expires
+      type: object
+      properties:
+        wallet_id:
+          title: Wallet ID
+          type: string
+        counterparty_wallet_address:
+          title: Counterparty Wallet Address
+          type: string
+          description: Short code or wallet ID of the recipient wallet of the transaction.
+        reference:
+          title: Reference
+          type: string
+        benefit_of:
+          title: Benefit of
+          type: string
+          description: The recipient of the transaction.
+        account_no:
+          title: Account number
+          type: string
+          description: Account_no of the recipient of the transaction.
+        partner_txID:
+          title: Partner TxID
+          type: string
+        authorize_id:
+          title: Requires transaction authorization
+          description: Set the CoreClient ID that should authorize the transaction before custodians
+          type: string
+        expires:
+          title: Expiration time
+          type: string
+          description: The time in Epoch when the transfer will expire if it doesn't get approved by the custodians.
+        send:
+          title: Send
+          description: This is the type and amount of cryptocurrency or tokenized asset in Satoshi sent from the trade initiator to the receiving counterparty. Satoshi figures are in whole numbers.
+          allOf:
+            - $ref: '#/components/schemas/AssetAmount'
+      example:
+        wallet_id: HUnmEJEgYeNYj2pTH8DfikDcH5gjHqhj9iadgVQgRKMk
+        counterparty_wallet_address: D1h4cyu5MJWDSgo6UczEPmEPAHKZ3vDkNiPXVrs6QuSP
+        expires: 1640998800
+        benefit_of: John Smith
+        account_no: 123-XX
+        reference: CX15R99XX
+        partner_txID: some-partner-txID
+        send:
+          symbol: BTC
+          amount: 800
+    Withdrawal:
+      title: Withdrawal
+      required:
+        - wallet_id
+        - address
+        - amount
+        - expires
+      type: object
+      properties:
+        wallet_id:
+          title: Wallet ID
+          type: string
+        address:
+          title: Address
+          type: string
+          description: The withdrawal address
+        reference:
+          title: Reference
+          type: string
+        benefit_of:
+          title: Benefit of
+          type: string
+        account_no:
+          title: Account number
+          type: string
+        partner_txID:
+          title: Partner TxID
+          type: string
+        expires:
+          title: Expiration time
+          type: string
+          description: The time in Epoch when the withdrawal will expire if it doesn't get approved by the custodians.
+        send:
+          title: Send
+          allOf:
+            - $ref: '#/components/schemas/AssetAmount'
+          description: This is the type and amount of cryptocurrency sent from initiating Principal to Beneficiary. This is defined as 'symbol' within the Fund schema.
+      example:
+        wallet_id: HUnmEJEgYeNYj2pTH8DfikDcH5gjHqhj9iadgVQgRKMk
+        address: mkLaDxYkiaYWfmPf3NdnrMCTNu9ZcpHgd6
+        expires: 1640998800
+        benefit_of: John Smith
+        account_no: 123-XX
+        reference: CX15R99XX
+        partner_txID: ''
+        send:
+          symbol: BTC
+          amount: 800
+    AtomicSwapMake:
+      title: New Atomic Swap Quote
+      required:
+        - reference
+      type: object
+      properties:
+        send_wallet_id:
+          title: Send Wallet ID
+          type: string
+        receive_wallet_id:
+          title: Receive Wallet ID
+          type: string
+        reference:
+          title: Reference
+          type: string
+        partner_txID:
+          title: Partner TxID
+          type: string
+        expires:
+          title: Expiration time
+          type: string
+          description: The time in Epoch when the withdrawal will expire if it doesn't get approved by the custodians.
+        send:
+          title: Send
+          allOf:
+            - $ref: '#/components/schemas/AssetAmount'
+          description: This is the type and amount of cryptocurrency sent from the Maker to the Taker. This is defined as 'symbol' within the Fund schema.
+        receive:
+          title: Receive
+          allOf:
+            - $ref: '#/components/schemas/AssetAmount'
+          description: This is the type and amount of cryptocurrency send from the Taker to the Maker. This is defined as 'symbol' within the Fund schema.
+        add_to_liquidity_hub:
+          title: Add to liquidity hub
+          type: boolean
+      example:
+        send_wallet_id: nLQtaZgx49s2sa7dD1K8unLQtaZgx49s
+        receive_wallet_id: 2sa7dD1K8unLQtaZgx49snLQtaZgx49s
+        expires: 1640998800
+        reference: CX15R99XX
+        partner_txID: ''
+        send:
+          symbol: BTC
+          amount: 800
+        receive:
+          symbol: ETH
+          amount: 2536
+        add_to_liquidity_hub: false
+    AtomicSwapTake:
+      title: New Atomic Swap take request
+      required:
+        - swap_id
+        - reference
+      type: object
+      properties:
+        send_wallet_id:
+          title: Send Wallet ID
+          type: string
+        receive_wallet_id:
+          title: Receive Wallet ID
+          type: string
+        reference:
+          title: Reference
+          type: string
+        partner_txID:
+          title: Partner TxID
+          type: string
+      example:
+        swap_id: unLQta2sZgxa7d49sD1K8
+        send_wallet_id: nLQtaZgx49s2sa7dD1K8unLQtaZgx49s
+        receive_wallet_id: 2sa7dD1K8unLQtaZgx49snLQtaZgx49s
+        reference: CX15R99XX
+        partner_txID: ''
+    User:
+      title: User
+      required:
+        - user_id
+        - firstName
+        - lastName
+        - phone
+        - email
+        - space_admin
+        - status
+      type: object
+      properties:
+        user_id:
+          title: User ID
+          type: string
+          description: User ID
+        firstName:
+          title: User first name
+          type: string
+          description: User first name.
+        lastName:
+          title: User last name
+          type: string
+          description: User last name.
+        email:
+          title: User email
+          type: string
+          description: User email address.
+        phone:
+          title: User mobile number
+          type: string
+          description: User mobile number address.
+          default: ''
+        space_admin:
+          title: Space admin
+          type: boolean
+          description: This declares whether a user is an admin or not. Users with admin privileges can create trading spaces.
+        status:
+          title: User status
+          type: integer
+          description: 'User Status will note the stage at which each end user is during the signup process. Example, 0 is not invited, 1 sends an invite, etc.'
+    InviteUser:
+      title: InviteUser
+      required:
+        - recipient_email
+        - sender_id
+        - space_admin
+      type: object
+      properties:
+        recipient_email:
+          title: Recipient email
+          type: string
+          description: The email of the user to be invited
+        sender_id:
+          title: Sender ID)
+          type: string
+          description: The ID of the sender of the invitation whose first and last names will be included in the invitation.
+        space_admin:
+          title: Space admin
+          type: boolean
+          description: This declares whether a user is an admin or not. Users with admin privileges can create trading spaces.
+      example:
+        recipient_email: palpatine@empire.com
+        sender_id: 324sdw34fsvdsf234
+        space_admin: true
+    UserList:
+      title: UserList
+      required:
+        - company_id
+        - total_count
+        - list
+      type: object
+      properties:
+        company_id:
+          title: Company id
+          type: string
+          description: The company id.
+        total_count:
+          title: Total count
+          type: integer
+          description: The total number of users.
+        list:
+          title: List
+          type: array
+          items:
+            type: object
+            properties:
+              user_id:
+                title: User ID
+                type: string
+                description: User ID
+              firstName:
+                title: User first name
+                type: string
+                description: User first name.
+              lastName:
+                title: User last name
+                type: string
+                description: User last name.
+              email:
+                title: User email
+                type: string
+                description: User email address.
+              phone:
+                title: User mobile number
+                type: string
+                description: User mobile number address.
+                default: ''
+              space_admin:
+                title: Space admin
+                type: integer
+                description: This declares whether a user is an admin or not. Users with admin privileges can create trading spaces.
+              status:
+                title: User status
+                type: integer
+                description: 'User Status indicates the stage an end user is at during the signup process. Example, 0 is not invited, 1 invite sent'
+      example:
+        company_id: 1dnoxz93UT3Pw6SgFCanv9xbHFr
+        total_count: 1
+        list:
+          - user_id: 2mZUKu9rH49HfRN7pAfsVT428dp2rnBX8v1Xob25KXq1
+            username: jdoe42
+            firstName: Jane
+            lastName: Doe
+            email: bbb@bbb
+            phone: bbb
+            space_admin: false
+            status: '{"email": 103, "mobile": 3}'
+    UserUpdate:
+      title: UserUpdate
+      required:
+        - space_admin
+      type: object
+      properties:
+        space_admin:
+          title: Space admin
+          type: integer
+          description: This declares whether a user is an admin or not. Users with admin privileges can create trading spaces.
+      example:
+        space_admin: 1
+    UserNewList:
+      title: UserNewList
+      required:
+        - list
+      type: object
+      properties:
+        list:
+          title: List
+          type: array
+          items:
+            $ref: '#/components/schemas/InviteUser'
+    UserNewListResponse:
+      title: UserNewListResponse
+      required:
+        - created
+      type: object
+      properties:
+        created:
+          title: Created
+          type: array
+          items:
+            $ref: '#/components/schemas/UserNewResponse'
+    UserNewResponse:
+      title: UserNewResponse
+      required:
+        - user_id
+      type: object
+      properties:
+        email:
+          title: User email
+          type: string
+          description: User email
+          default: ''
+        user_id:
+          title: User ID
+          type: string
+          description: User ID
+    CompanySearchResponse:
+      title: CompanySearchResponse
+      type: object
+      x-examples:
+        search result:
+          total_count: 2
+          matches:
+            - company_id: 1bzn0aBdpqSVJ1KPzUk4T7rIPym
+              name: ACME Corpdsxcvdfg44
+              domain: acmeds4xcvdfg4.com
+            - company_id: 1bzn6ex7fRxKQsSqCJDDpyb4uaS
+              name: ACME Corp
+              domain: acme.com
+      description: ''
+      properties:
+        total_count:
+          description: Total count in integer format of the number of matches for a company search.
+          type: integer
+        matches:
+          type: array
+          description: Array showing details of each matching company that comprises the total count.
+          items:
+            type: object
+            properties:
+              company_id:
+                type: string
+              name:
+                type: string
+              domain:
+                type: string
+    NewCustodyGroup:
+      title: Custody Group
+      type: object
+      properties:
+        threshold:
+          title: Custody group threshold
+          description: Minimum number of custodian approval signatures out of the total number for a transaction to happen.
+          type: integer
+        members:
+          title: Custody group custodians
+          description: 'Members that are assigned as custodians to approve withdrawal transactions. As members need to be trusted party users for the company of the fund, the id you add is the trusted_party_id.'
+          type: array
+          items:
+            title: custodian user id
+            type: string
+    Custodygroup:
+      title: Custodygroup
+      type: object
+      properties:
+        id:
+          type: string
+        threshold:
+          type: integer
+        members_count:
+          type: integer
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustodygroupMember'
+      x-examples:
+        example:
+          id: 1dnpFwNt4D3boBi9UaoEZIwUmbe
+          threshold: 1
+          members_count: 0
+          members:
+            - user_id: AAA778f3DQRUZ7vzk3AJwk3o7w4gdEVSnRZ8oZuQBP3E
+              firstName: George
+              lastName: Lucas
+    CustodygroupMember:
+      title: CustodygroupMember
+      type: object
+      properties:
+        user_id:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        required:
+          type: boolean
+      example:
+        user_id: AAA778f3DQRUZ7vzk3AJwk3o7w4gdEVSnRZ8oZuQBP3E
+        firstName: Peter
+        lastName: Jackson
+        required: false
+    CustodygroupSearchResult:
+      title: CustodygroupSearchResult
+      type: object
+      properties:
+        total_count:
+          type: integer
+        list:
+          type: array
+          items:
+            type: object
+            properties:
+              custody_group_id:
+                type: string
+              fund_id:
+                type: string
+              name:
+                type: string
+      example:
+        total_count: 2
+        List:
+          - custody_group_id: 1dnpFwNt4D3boBi9UaoEZIwUmbe
+            fund_id: 1dnpG2K2A5hMOVjGFl1DrsbnvmS
+            name: Fund 1 Withdraw policy
+          - custody_group_id: 1dnpG345BSkYA2nrTCRxAiRN0sE
+            fund_id: 1dnpG2K2A5hMOVjGFl1DrsbnvmS
+            name: Fund 1 Tx policy
+      description: ''
+    Permissions:
+      title: Permissions of the member
+      type: object
+      properties:
+        admin:
+          type: boolean
+          description: True means the member is an admin. False means the member is not an admin.
+        withdraw:
+          type: boolean
+          description: True means the member can initiate a withdrawal. False means the member cannot initiate a withdrawal.
+        transfer:
+          type: boolean
+          description: True means the member can initiate a transfer. False means the member cannot initiate a transfer.
+        swap:
+          type: boolean
+          description: True means the member can initiate a swap. False means the member cannot initiate a swap.
+      description: A map of permissions
+    TxInfo:
+      title: TransferInfo
+      description: Details of a specific transfer.
+      type: object
+      properties:
+        approver_count:
+          description: 'The approvedCount is the number of custodians that have approved the transfer. When it reaches the threshold, the transaction goes through and the Qredo Blockchain is updated. If less than the threshold, the transaction does not go through.'
+          type: integer
+        expires:
+          description: The time in which the transaction expires where custodian approvals are needed. The time is in Epoch.
+          type: integer
+        initiated_timestamp:
+          description: The time in which the transaction was initiated in Epoch.
+          type: integer
+        initiator_authorized:
+          description: |-
+            Status to indicate if the transaction is authorised by the trade initiator.
+                                 True indicates that the transaction is authorised and False indicates that
+                                 the transaction is not yet authorised. All transactions need to be authorised
+                                 by the initiator.
+          type: boolean
+        initiator_name:
+          description: Name of the trade initiator that initiated the transfer.
+          type: string
+        reference:
+          description: The transfer reference number.
+          type: string
+        status:
+          type: array
+          description: Details of the transfer approval status.
+          items:
+            type: object
+            properties:
+              action_id:
+                description: The ID assigned to the approval action.
+                type: string
+              first_name:
+                description: First name of the custodian.
+                type: string
+              last_name:
+                description: Last name of the custodian.
+                type: string
+              status:
+                description: 'Custodian status of the transfer as pending, approved, rejected or expired.'
+                type: string
+              timestamp:
+                description: The time in which the transfer was approved or rejected in Epoch.
+                type: integer
+              user_id:
+                description: User ID of the custodian.
+                type: string
+              username:
+                description: User name of the custodian.
+                type: string
+        status_details:
+          description: Details of the transfer status.
+          type: object
+          properties:
+            account_no:
+              description: Account number of the counterparty
+              type: string
+            amount:
+              description: Amount of the transfer in Satoshis (in whole number form).
+              type: integer
+            asset:
+              description: Asset of the transfer.
+              type: string
+            benefit_of:
+              description: Beneficiary of the transfer.
+              type: string
+            expires:
+              description: Expiration time
+              type: integer
+            fees:
+              description: Amount of the fees in Satoshis.
+              type: integer
+            fund_id:
+              description: fund ID of the transfer.
+              type: string
+            net_amount:
+              description: Amount of the transfer after the fees are deducted.
+              type: integer
+            recipient_address:
+              description: Wallet address of the recipient.
+              type: string
+            recipient_email:
+              description: Email address of the receiving counterparty.
+              type: string
+            recipient_first_name:
+              description: First name of the receiving counterparty.
+              type: string
+            recipient_last_name:
+              description: Last name of the receiving counterparty.
+              type: string
+            recipient_username:
+              description: User name of the receiving counterparty.
+              type: string
+            reference:
+              description: Reference number of the transfer.
+              type: string
+            requested_by:
+              description: The company that requested the transfer.
+              type: string
+        threshold_required:
+          type: integer
+          description: Number of custodian signatures needed for a transfer to be approved.
+        tx_id:
+          type: string
+          description: The transaction ID.
+        tx_status:
+          type: string
+          oneOf:
+            - $ref: '#/components/schemas/pending_initiate_transfer'
+            - $ref: '#/components/schemas/pending_transfer'
+            - $ref: '#/components/schemas/expired_transfer'
+            - $ref: '#/components/schemas/approved_transfer'
+            - $ref: '#/components/schemas/initiate_rejected_transfer'
+            - $ref: '#/components/schemas/custody_rejected_transfer'
+            - $ref: '#/components/schemas/chain_rejected_transfer'
+          description: The status of the transfer
+      example:
+        approvedCount: 1
+        expires: 1640998800
+        initiatedTimestamp: 1594281300
+        initiatorAuthorized: true
+        initiatorName: SW Corp
+        reference: CX15R99XX
+        status:
+          - actionID: 1eRPBxd9w6WrooxkquWmirbo4oL
+            firstName: Han
+            lastName: Solo
+            status: approved
+            timestamp: 1594281312
+            userID: 3fyHm7e3hsbSXBs1yjpzMaesirXPhqcz8kM7zgafmZef
+            username: hsolo
+        statusDetails:
+          accountNo: 123-XX
+          amount: 801
+          asset: BTC-TESTNET
+          benefitOf: Ben Kenobi
+          expires: 0
+          fees: 1
+          fundID: 1ePK2dtLnpocC9uRuy3DlNC7zXd
+          netAmount: 800
+          recipientAddress: ''
+          recipientEmail: han@falcon.com
+          recipientFirstName: Han
+          recipientLastName: Solo
+          recipientUsername: hsolo
+          reference: CX15R99XX
+          requestedBy: SW Corp
+        thresholdRequired: 1
+        txID: 1eRPC44MjhRI3sJ6UzzjYio5ulu
+        txStatus: approved
+    WithdrawalInfo:
+      title: WithdrawalInfo
+      description: Details of a withdrawal status
+      type: object
+      properties:
+        approver_count:
+          description: 'The approvedCount is the number of custodians that have approved the withdrawal. When it reaches the threshold, the transaction goes through and the Qredo Blockchain is updated. If less than the threshold, the transaction does not go through.'
+          type: integer
+        expires:
+          description: The time in which the transaction expires where custodian approvals are needed. The time is in Epoch.
+          type: integer
+        initiated_timestamp:
+          description: The time in which the transaction was initiated in Epoch.
+          type: integer
+        initiator_authorized:
+          description: |-
+            Status to indicate if the withdrawal is authorised by the trade initiator.
+                                 True indicates that the withdrawal is authorised and False indicates that
+                                 the withdrawal is not yet authorised. All transactions need to be authorised
+                                 by the initiator.
+          type: boolean
+        initiator_name:
+          description: Name of the trade initiator that initiated the withdrawal.
+          type: string
+        reference:
+          description: The withdrawal reference number.
+          type: string
+        status:
+          type: array
+          description: Details of the withdrawal approval status.
+          items:
+            type: object
+            properties:
+              action_id:
+                description: The ID assigned to the approval action.
+                type: string
+              first_name:
+                description: First name of the custodian.
+                type: string
+              last_name:
+                description: Last name of the custodian.
+                type: string
+              status:
+                description: 'Custodian status of the withdrawal as pending, approved, rejected or expired.'
+                type: string
+              timestamp:
+                description: The time in which the withdrawal was approved or rejected in Epoch.
+                type: integer
+              user_id:
+                description: User ID of the custodian.
+                type: string
+              username:
+                description: User name of the custodian.
+                type: string
+        status_details:
+          description: Details of the withdrawal status.
+          type: object
+          properties:
+            account_no:
+              description: Account number of the counterparty
+              type: string
+            amount:
+              description: Amount of the withdrawal in Satoshis (in whole number form).
+              type: integer
+            asset:
+              description: Asset of the withdrawal.
+              type: string
+            benefit_of:
+              description: Beneficiary of the withdrawal.
+              type: string
+            expires:
+              description: Expiration time
+              type: integer
+            fees:
+              description: Amount of the fees in Satoshis.
+              type: integer
+            fund_id:
+              description: fund ID of the withdrawal.
+              type: string
+            net_amount:
+              description: Amount of the withdrawal after the fees are deducted.
+              type: integer
+            recipient_address:
+              description: Wallet address of the recipient.
+              type: string
+            recipient_email:
+              description: Email address of the receiving counterparty.
+              type: string
+            recipient_first_name:
+              description: First name of the receiving counterparty.
+              type: string
+            recipient_last_name:
+              description: Last name of the receiving counterparty.
+              type: string
+            recipient_username:
+              description: User name of the receiving counterparty.
+              type: string
+            reference:
+              description: Reference number of the withdrawal.
+              type: string
+            requested_by:
+              description: The company that requested the withdrawal.
+              type: string
+        threshold_required:
+          type: integer
+          description: Number of custodian signatures needed for a withdrawal to be approved.
+        tx_id:
+          type: string
+          description: The transaction ID.
+        tx_status:
+          type: string
+          oneOf:
+            - $ref: '#/components/schemas/pending_initiate_withdrawal'
+            - $ref: '#/components/schemas/pending_withdrawal'
+            - $ref: '#/components/schemas/expired_withdrawal'
+            - $ref: '#/components/schemas/approved_withdrawal'
+            - $ref: '#/components/schemas/initiate_rejected_withdrawal'
+            - $ref: '#/components/schemas/custody_rejected_withdrawal'
+            - $ref: '#/components/schemas/chain_rejected_withdrawal'
+          description: The status of the withdrawal
+      example:
+        approvedCount: 1
+        expires: 1640998800
+        initiatedTimestamp: 1594281300
+        initiatorAuthorized: true
+        initiatorName: SW Corp
+        reference: CX15R99XX
+        status:
+          - actionID: 1eRPBxd9w6WrooxkquWmirbo4oL
+            firstName: Han
+            lastName: Solo
+            status: approved
+            timestamp: 1594281312
+            userID: 3fyHm7e3hsbSXBs1yjpzMaesirXPhqcz8kM7zgafmZef
+            username: hsolo
+        statusDetails:
+          accountNo: 123-XX
+          amount: 801
+          asset: BTC-TESTNET
+          benefitOf: Ben Kenobi
+          expires: 0
+          fees: 1
+          fundID: 1ePK2dtLnpocC9uRuy3DlNC7zXd
+          netAmount: 800
+          recipientAddress: ''
+          recipientEmail: han@falcon.com
+          recipientFirstName: Han
+          recipientLastName: Solo
+          recipientUsername: hsolo
+          reference: CX15R99XX
+          requestedBy: SW Corp
+        thresholdRequired: 1
+        txID: 1eRPC44MjhRI3sJ6UzzjYio5ulu
+        txStatus: approved
+    pending_initiate_transfer:
+      type: string
+      description: The trade initiator is yet to authorise the transfer.
+    pending_transfer:
+      type: string
+      description: The transfer is yet to be approved by the custodians.
+    expired_transfer:
+      type: string
+      description: The time set for custodian approval has been exceeded. The time is set in Epoch.
+    approved_transfer:
+      type: string
+      description: 'The transfer has been approved and has exceeded the threshold. Once approved, the transfer is written to the Qredo Blockchain.'
+    initiate_rejected_transfer:
+      type: string
+      description: The transfer has been rejected by the trade initiator.
+    custody_rejected_transfer:
+      type: string
+      description: The transfer has been rejected by the custodians.
+    chain_rejected_transfer:
+      type: string
+      description: 'Transfer has been rejected by the Qredo blockchain. For example, an internal error has existed on the Qredo blockchain.'
+    pending_initiate_withdrawal:
+      type: string
+      description: The trade initiator is yet to authorise the withdrawal.
+    pending_withdrawal:
+      type: string
+      description: The withdrawal is yet to be approved by the custodians.
+    expired_withdrawal:
+      type: string
+      description: The time set for custodian approval has been exceeded. The time is set in Epoch.
+    approved_withdrawal:
+      type: string
+      description: 'The withdrawal has been approved and has exceeded the threshold. Once approved, the withdrawal is written to the Qredo Blockchain.'
+    initiate_rejected_withdrawal:
+      type: string
+      description: The withdrawal has been rejected by the trade initiator.
+    custody_rejected_withdrawal:
+      type: string
+      description: The withdrawal has been rejected by the custodians.
+    chain_rejected_withdrawal:
+      type: string
+      description: 'Withdrawal has been rejected by the Qredo blockchain. For example, an internal error has existed on the Qredo blockchain.'
+    Sweep:
+      title: Sweep
+      type: object
+      properties:
+        wallet_id:
+          title: Wallet ID
+          type: string
+        recipient_wallet_id:
+          title: Destination wallet ID
+          type: string
+        reference:
+          title: Reference
+          type: string
+        partner_txID:
+          title: Partner TxID
+          type: string
+        expires:
+          title: Expiration time
+          type: string
+          description: The time in Epoch when the withdrawal will expire if it doesn't get approved by the custodians.
+        send:
+          title: Send
+          allOf:
+            - $ref: '#/components/schemas/AssetAmount'
+          description: This is the type and amount of cryptocurrency sent from initiating Principal to Beneficiary. This is defined as 'symbol' within the Fund schema.
+      example:
+        wallet_id: HUnmEJEgYeNYj2pTH8DfikDcH5gjHqhj9iadgVQgRKMk
+        recipient_wallet_id: HUnmEJEgYeNYj2pTH8DfikDcH5gjHqhj9iadgVQgRKMk
+        expires: 1640998800
+        reference: CX15R99XX
+        partner_txID: ''
+        send:
+          symbol: BTC
+          amount: 800
+    SweepInfo:
+      title: SweepInfo
+      description: Details of a sweep status
+      type: object
+      properties:
+        approver_count:
+          type: integer
+        expires:
+          description: The time in which the transaction expires. The time is in Epoch.
+          type: integer
+        initiated_timestamp:
+          description: The time in which the transaction was initiated in Epoch.
+          type: integer
+        reference:
+          description: The sweep reference.
+          type: string
+        status:
+          type: array
+          description: Details of the sweep approval status.
+          items:
+            type: object
+            properties:
+              action_id:
+                description: The ID assigned to the approval action.
+                type: string
+              status:
+                description: 'Custodian status of the sweep as pending, approved, rejected or expired.'
+                type: string
+              timestamp:
+                description: The time in which the withdrawal was approved or rejected in Epoch.
+                type: integer
+              entity:
+                $ref: '#/components/schemas/pending_initiate_transfer'
+        status_details:
+          description: Details of the sweep.
+          type: object
+          properties:
+            amount:
+              description: Amount of the withdrawal in Satoshis (in whole number form).
+              type: integer
+            asset:
+              description: Asset of the withdrawal.
+              type: string
+            expires:
+              description: Expiration time
+              type: integer
+            fees:
+              description: Amount of the fees in Satoshis.
+              type: integer
+            wallet_id:
+              description: The wallet id.
+              type: string
+            net_amount:
+              description: Amount of the withdrawal after the fees are deducted.
+              type: integer
+            recipient_wallet_id:
+              description: Wallet address of the recipient.
+              type: string
+            reference:
+              description: Reference sweep.
+              type: string
+            requested_by:
+              description: The company that requested the withdrawal.
+              type: string
+        threshold_required:
+          type: integer
+          description: Number of custodian signatures needed for a withdrawal to be approved.
+        tx_id:
+          type: string
+          description: The transaction ID.
+        tx_status:
+          type: string
+          description: The status of the sweep
+    CoreClientSign:
+      title: Sign core client message
+      type: object
+      properties:
+        message_hash_hex:
+          title: Hex encoded message hash to be signed
+          type: string
+      example:
+        message_hash_hex: b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9
+    CoreClientSignature:
+      title: Core client message signature
+      type: object
+      properties:
+        signature_hex:
+          title: Hex encoded signature
+          type: string
+        signer_id:
+          title: The ID of the signer
+          type: string
+      example:
+        signature_hex: 0300228be28434d7362d45a85797da316ae4f3f015fb9c1ecf502d1af8d1f6b6c7e40d28c1b9da2996a095da5829f3e98e
+        signer_id: HF3kdijefj3D3UpwCKES6vYoRFgogoquQNrJXMAsFBUo
+    CoreClientVerifySignature:
+      title: Verify signature
+      type: object
+      properties:
+        message_hash_hex:
+          title: Hex encoded message
+          type: string
+        signature_hex:
+          title: Hex encoded signature
+          type: string
+        signer_id:
+          title: The ID of the signer
+          type: string
+      example:
+        message_hash_hex: b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9
+        signer_id: HF3kdijefj3D3UpwCKES6vYoRFgogoquQNrJXMAsFBUo
+        signature_hex: 0300228be28434d7362d45a85797da316ae4f3f015fb9c1ecf502d1af8d1f6b6c7e40d28c1b9da2996a095da5829f3e98e
+    AddToLiquidityHub:
+      title: AddToLiquidityHub
+      description: Add a transaction to the liquidity hub.
+      type: object
+      properties:
+        tx_id:
+          title: Swap transaction id
+          type: string
+      example:
+        tx_id: 1lm519eiGTk15sA7xHrEYvSBuSn
+    LiquidityHub:
+      title: LiquidityHub
+      description: Liquidity hub items.
+      type: object
+      properties:
+        items:
+          title: Items
+          type: object
+          properties:
+            tx_id:
+              type: string
+            send_asset:
+              type: string
+            send_amount:
+              type: number
+            receive_asset:
+              type: string
+            receive_amount:
+              type: number
+            owner:
+              type: boolean
+              description: Returns true if the transaction's maker is the current company
+            added:
+              description: Timestamp of when the transaction was added to the liquidity hub.
+              type: integer
+            expires:
+              description: Timestamp of when the transaction expires.
+              type: integer
+      example:
+        items:
+          tx_id: '1lmBAoovvOQFysj4FzuQxNdoZYO,'
+          send_asset: BTC
+          send_amount: 800
+          receive_asset: ETH
+          receive_amount: 2536
+          owner: false
+          expires: 1640998800
+          added: 1608192304
+    NewCoreClient:
+      title: NewCoreClient
+      type: object
+      properties:
+        name:
+          title: Core client name
+          type: string
+    CoreClientInfo:
+      title: NewCoreClient
+      type: object
+      properties:
+        id:
+          title: Core client id
+          type: string
+        name:
+          title: Core client name
+          type: string
+        feed:
+          title: Websocket feed address
+          type: string
+        timestamp:
+          title: Core client create time in epoch
+          type: string
+    CoreClientsInfo:
+      title: CoreClientsInfo
+      type: object
+      properties:
+        count:
+          title: Total count of Core Client instances returned
+          type: integer
+        clients:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoreClientInfo'
+    CoreClientWallet:
+      title: Core client connected wallet info
+      type: object
+      properties:
+        wallet_id:
+          title: Wallet ID
+          type: string
+        action_id:
+          title: Approval action ID
+          type: string
+        status:
+          title: Action status for all Pending or Approved wallets
+          type: string
+          description: The action status
+          enum:
+            - pending
+            - expired
+            - approved
+            - rejected
+        expires:
+          title: Action expire time
+          type: integer
+          description: The expire time in epoch
+    ActionInfo:
+      title: ActionInfo
+      type: object
+      properties:
+        id:
+          title: Action ID
+          type: string
+          description: The ID of the action
+        type:
+          title: Action type
+          type: string
+          description: The action type
+          enum:
+            - ApproveWithdraw
+            - ApproveTransfer
+        status:
+          title: Action status
+          type: string
+          description: The action status
+          enum:
+            - pending
+            - expired
+            - approved
+            - rejected
+        timestamp:
+          title: Action time
+          type: integer
+          description: The create time in epoch
+        expireTime:
+          title: Action expire time
+          type: integer
+          description: The expire time in epoch
+      example:
+        id: 1i8O3CAQCpny0xvYMhMVPHzIcih
+        type: ApproveTransfer
+        status: pending
+        timestamp: 1601972322
+        expireTime: 1601973322
+    ActionsInfo:
+      title: ActionsInfo
+      type: object
+      properties:
+        count:
+          title: Total count
+          type: integer
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActionInfo'
+    ActionDetails:
+      title: ActionDetails
+      type: object
+      properties:
+        id:
+          title: Action ID
+          type: string
+          description: The ID of the action
+        type:
+          title: Action type
+          type: string
+          description: The action type
+          enum:
+            - ApproveWithdraw
+            - ApproveTransfer
+        status:
+          title: Action status
+          type: string
+          description: The action status
+          enum:
+            - pending
+            - expired
+            - approved
+            - rejected
+        timestamp:
+          title: Action time
+          type: integer
+          description: The create time in epoch
+        expireTime:
+          title: Action expire time
+          type: integer
+          description: The expire time in epoch
+        details:
+          oneOf:
+            - $ref: '#/components/schemas/ActionDetailApproveWithdraw'
+            - $ref: '#/components/schemas/ActionDetailApproveTransfer'
+            - $ref: '#/components/schemas/ActionDetailApproveNewWalletConnect'
+    ActionDetailApproveWithdraw:
+      description: ActionDetailApproveWithdraw provides details of an approval withdrawal
+      properties:
+        txType:
+          type: string
+        txID:
+          type: string
+        asset:
+          type: string
+        amount:
+          format: int64
+          type: integer
+        fees:
+          format: int64
+          type: integer
+        netAmount:
+          format: int64
+          type: integer
+        reference:
+          type: string
+        benefitOf:
+          type: string
+        accountNo:
+          type: string
+        companyID:
+          type: string
+        fundID:
+          type: string
+        initiatedTime:
+          format: int64
+          type: integer
+        expires:
+          format: int64
+          type: integer
+        recipientAddress:
+          type: string
+        recipientAddressName:
+          type: string
+        initiatedBy:
+          type: string
+        initiatorName:
+          type: string
+        initiatorType:
+          type: string
+      type: object
+    ActionDetailApproveTransfer:
+      description: ActionDetailApproveTransfer provides details of an approval transfer
+      properties:
+        txType:
+          type: string
+        txID:
+          type: string
+        asset:
+          type: string
+        amount:
+          format: int64
+          type: integer
+        fees:
+          format: int64
+          type: integer
+        netAmount:
+          format: int64
+          type: integer
+        reference:
+          type: string
+        benefitOf:
+          type: string
+        accountNo:
+          type: string
+        companyID:
+          type: string
+        fundID:
+          type: string
+        initiatedTime:
+          format: int64
+          type: integer
+        expires:
+          format: int64
+          type: integer
+        recipientID:
+          type: string
+        recipientName:
+          type: string
+        initiatedBy:
+          type: string
+        initiatorName:
+          type: string
+        initiatorType:
+          type: string
+      type: object
+    ActionDetailApproveNewWalletConnect:
+      description: ActionDetailApproveNewWalletConnect provides details of a new wallet connect
+      type: object
+      properties:
+        clientData:
+          type: object
+          properties:
+            customProperty1:
+              type: string
+            customProperty2:
+              type: string
+        wallet:
+          type: object
+          properties:
+            walletID:
+              type: string
+            name:
+              type: string
+            asset:
+              type: string
+            type:
+              type: integer
+            typeCode:
+              type: string
+tags:
+  - name: Common
+    description: Common endpoints not specific to a company.
+  - name: Company
+    description: Qredo Partner's customer.
+    externalDocs:
+      description: Find out more
+      url: 'https://qa-support.qredo.com/docs/Partner%20API#api-endpoints'
+  - name: TrustedNetwork
+    description: Operations on customer's trusted parties.
+    externalDocs:
+      description: Find out more
+      url: 'https://qa-support.qredo.com/docs/Partner%20API#api-endpoints'
+  - name: Holding
+    description: Obtain data on holdings.
+    externalDocs:
+      description: Find out more
+      url: 'https://qa-support.qredo.com/docs/Partner%20API#api-endpoints'
+  - name: Fund
+    description: Operations on customer's funds.
+    externalDocs:
+      description: Find out more
+      url: 'https://qa-support.qredo.com/docs/Partner%20API#api-endpoints'
+  - name: Wallet
+    description: Operations on wallets
+    externalDocs:
+      description: Find out more
+      url: 'https://qa-support.qredo.com/docs/Partner%20API#api-endpoints'
+  - name: Transfer
+    description: Operations on customer's transfers.
+    externalDocs:
+      description: Find out more
+      url: 'https://qa-support.qredo.com/docs/Partner%20API#api-endpoints'
+  - name: Withdrawal
+    description: Operations on customer's withdrawals.
+    externalDocs:
+      description: Find out more
+      url: 'https://qa-support.qredo.com/docs/Partner%20API#api-endpoints'
+  - name: Atomic Swap
+    description: Operations on atomic swaps.
+    externalDocs:
+      description: Find out more
+      url: 'https://qa-support.qredo.com/docs/Partner%20API#api-endpoints'
+  - name: Core Client
+    description: Qredo Core Client endpoints
+  - name: Sweep
+    description: Operations on sweeps.
