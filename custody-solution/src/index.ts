@@ -64,7 +64,7 @@ async function test_createFund_Part1() {
   // 3. Approve the request in your mobile app.
 }
 
-// test_createFund_Part1() //####################### comment this after executing part 1 #######################
+test_createFund_Part1() //####################### comment this after executing part 1 #######################
 
 async function addCompany(_name: string, _domain: string, _city: string, _country: string): Promise<API.CreateCompanyResponse | undefined> {
   var createCompanyResponse: API.CreateCompanyResponse | undefined =
