@@ -6,7 +6,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 //global variables
-const productionApiKey: string = process.env.API_KEY!;
+const sondboxApiKey: string = process.env.API_KEY!;
 const BASE_PATH = "https://api.qredo.network/api/v1/p";
 
 //-----------------------------------Basic API Request------------------------------------
@@ -39,7 +39,7 @@ async function getAssets(): Promise<API.Assets> {
     // 2. Make the request using your API key
     const response = await API.CommonApiFactory(
       new API.Configuration({
-        apiKey: productionApiKey,
+        apiKey: sondboxApiKey,
       })
     ).assetsGet("", timestamp, signature);
     assets = response.data;
@@ -50,7 +50,6 @@ async function getAssets(): Promise<API.Assets> {
 }
 
 //----------------------------------Creating wallets using the API----------------------------------
-
 
 //In the first part we will create a company and we will register ourselves as a trusted party of this company.
 async function test_createFund_Part1() {
@@ -89,7 +88,7 @@ async function addCompany(_name: string, _domain: string, _city: string, _countr
 
     const response = await API.CompanyApiFactory(
       new API.Configuration({
-        apiKey: productionApiKey,
+        apiKey: sondboxApiKey,
       })
     ).companyPost(company, "", timestamp, signature);
 
@@ -119,7 +118,7 @@ async function addTrustedParty(_companyId: string, _trustedPartyNew: API.Trusted
 
     const response = await API.TrustedNetworkApiFactory(
       new API.Configuration({
-        apiKey: productionApiKey
+        apiKey: sondboxApiKey
       })
     ).companyCompanyIdTrustedpartyPost(
       _companyId,
@@ -214,7 +213,7 @@ async function getAllCompanies(): Promise<API.CompanySearchResponse | undefined>
 
     const response = await API.CompanyApiFactory(
       new API.Configuration({
-        apiKey: productionApiKey,
+        apiKey: sondboxApiKey,
       })
     ).companySearchGet("", timestamp, signature);
 
@@ -240,7 +239,7 @@ async function getTrustedParty(_companyId: string): Promise<API.TrustedPartyList
     );
     const response = await API.TrustedNetworkApiFactory(
       new API.Configuration({
-        apiKey: productionApiKey
+        apiKey: sondboxApiKey
       })
     ).companyCompanyIdTrustedpartyGet(_companyId, "", timestamp, signature);
 
@@ -269,7 +268,7 @@ async function addFund(_companyId: string, _fund: API.Fund): Promise<API.CreateF
 
     const response = await API.FundApiFactory(
       new API.Configuration({
-        apiKey: productionApiKey
+        apiKey: sondboxApiKey
       })
     ).companyCompanyIdFundPost(_companyId, _fund, "", timestamp, signature);
     createFundResponse = response.data;
@@ -295,7 +294,7 @@ async function getAllFunds(companyId: string) : Promise<API.FundSearchResult> {
 
       const response = await API.FundApiFactory(
         new API.Configuration({
-          apiKey: productionApiKey,
+          apiKey: sondboxApiKey,
         })
       ).companyCompanyIdFundSearchGet(
         companyId,
