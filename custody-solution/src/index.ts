@@ -58,7 +58,7 @@ async function test_createFund_Part1() {
   const the_company_id = the_company?.company_id!
 
   // 2. Give your email address to register as a trusted party for your company
-  await addTrustedParty(the_company_id, {address: "achelia200@gmail.com"})
+  await addTrustedParty(the_company_id, {address: "your_email@gmail.com"})
 
   // 3. Approve the request in your mobile app.
 }
