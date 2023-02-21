@@ -84,7 +84,7 @@ function test_createFund_Part1() {
         const the_company = yield addCompany("Bla Company", "bla", "Cologne", "Germany");
         const the_company_id = the_company === null || the_company === void 0 ? void 0 : the_company.company_id;
         // 2. Give your email address to register as a trusted party for your company
-        yield addTrustedParty(the_company_id, { address: "achelia200@gmail.com" });
+        yield addTrustedParty(the_company_id, { address: "your_email@gmail.com" });
         // 3. Approve the request in your mobile app.
     });
 }
